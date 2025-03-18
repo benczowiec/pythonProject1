@@ -1,0 +1,12 @@
+[project]
+name = "pythonproject1"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.11",
+    "pandas>=2.2.3",
+    "reverse-geocode>=1.6.5",
+    "ruff>=0.10.0",
+]
