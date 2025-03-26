@@ -19,7 +19,7 @@ class ProductService:
     def process_products(self, products):
         processed_products: Set[Product] = set()
         for product in products:
-            new_product: ProductDto = ProductDto(product["title"], product["category"], product["price"])
+            new_product: ProductDto = ProductDto(product["id"], product["title"], product["price"])
             processed_products.add(self.product_mapper.map_product_to_entity(new_product))
         self.save_products(processed_products)
 
