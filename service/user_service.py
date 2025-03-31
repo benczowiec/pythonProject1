@@ -1,12 +1,15 @@
-from typing import Set
+from collections import Counter
+from typing import Set, List, Dict
 
 from sqlmodel import Session, select
 
 from controller.dummy_connector import DummyConnector
 from databese.database import engine
-from domain.dao.dao_all import User
+from domain.dao.dao_all import User, Basket
 from domain.dto.user_dto import UserDto
 from mappers.user_mapper import UserMapper
+from service import product_service
+from service.product_service import ProductService
 
 
 class UserService:
@@ -15,6 +18,7 @@ class UserService:
     def __init__(self):
         self.user_controller = DummyConnector()
         self.user_mapper = UserMapper()
+        self.product_service = ProductService()
 
     def process_users(self, users):
         processed_users: Set[User] = set()
@@ -32,6 +36,36 @@ class UserService:
             data = self.user_controller.get_data(skip, limit, self.user_endpoint)
             self.process_users(data["users"])
             skip += limit
+
+    def find_favorite_categories_for_users(self) -> Dict[int, str]:
+        favorite_categories = {}
+
+        with Session(engine) as session:
+            users = self.find_all_users()
+            for user in users:
+                user_id = user.id  # Pobierz identyfikator użytkownika z obiektu User
+                user_name = user.first_name + " " + user.last_name  # Pobierz imię użytkownika z obiektu User
+
+                # Pobierz wszystkie zamówienia użytkownika
+                statement = select(Basket).where(Basket.user_id == user_id)
+                baskets = session.exec(statement).all()
+
+                # Pobierz produkty z zamówień
+                product_ids = [basket.product_id for basket in baskets]
+                products = self.product_service.find_all_products_by(product_ids)
+
+                # Zlicz zamówienia według kategorii
+                categories = [product.category for product in products]
+                category_counts = Counter(categories)
+
+                # Znajdź kategorię z największą liczbą zamówień
+                if category_counts:
+                    favorite_category = category_counts.most_common(1)[0][0]
+                    favorite_categories[user_name] = favorite_category
+                else:
+                    favorite_categories[user_name] = None  # Jeśli użytkownik nie ma zamówień
+
+        return favorite_categories
 
     def save_users(self, users: set[User]):
         with Session(engine) as session:
