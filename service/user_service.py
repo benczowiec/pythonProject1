@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import Set, List, Dict
+from typing import Set, Dict
 
 from sqlmodel import Session, select
 
@@ -8,7 +8,6 @@ from databese.database import engine
 from domain.dao.dao_all import User, Basket
 from domain.dto.user_dto import UserDto
 from mappers.user_mapper import UserMapper
-from service import product_service
 from service.product_service import ProductService
 
 
@@ -43,27 +42,23 @@ class UserService:
         with Session(engine) as session:
             users = self.find_all_users()
             for user in users:
-                user_id = user.id  # Pobierz identyfikator użytkownika z obiektu User
-                user_name = user.first_name + " " + user.last_name  # Pobierz imię użytkownika z obiektu User
+                user_id = user.id
+                user_name = user.first_name + " " + user.last_name
 
-                # Pobierz wszystkie zamówienia użytkownika
                 statement = select(Basket).where(Basket.user_id == user_id)
                 baskets = session.exec(statement).all()
 
-                # Pobierz produkty z zamówień
                 product_ids = [basket.product_id for basket in baskets]
                 products = self.product_service.find_all_products_by(product_ids)
 
-                # Zlicz zamówienia według kategorii
                 categories = [product.category for product in products]
                 category_counts = Counter(categories)
 
-                # Znajdź kategorię z największą liczbą zamówień
                 if category_counts:
                     favorite_category = category_counts.most_common(1)[0][0]
                     favorite_categories[user_name] = favorite_category
                 else:
-                    favorite_categories[user_name] = None  # Jeśli użytkownik nie ma zamówień
+                    favorite_categories[user_name] = None
 
         return favorite_categories
 

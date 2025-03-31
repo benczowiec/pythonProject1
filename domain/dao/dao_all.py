@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, TYPE_CHECKING, Optional
+from typing import Any, List, Optional
 
 from sqlmodel import SQLModel, Field, Relationship
 
@@ -44,6 +44,7 @@ class User(SQLModel, table=True):
 
     def __hash__(self):
         return hash(self.user_id)
+
 
 class Basket(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)

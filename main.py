@@ -1,11 +1,9 @@
 import csv
 import logging
-from typing import List, Dict
 
-from sqlmodel import SQLModel, Session, select
+from sqlmodel import SQLModel
 
 from databese.database import engine
-from domain.dao.dao_all import Basket
 from service.basket_service import BasketService
 from service.product_service import ProductService
 from service.user_service import UserService
@@ -44,11 +42,9 @@ def main():
         for user_name, category in favorite_categories.items():
             writer.writerow([user_name, category])
 
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
     )
     main()
-
-
-
