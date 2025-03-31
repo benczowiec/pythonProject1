@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 
 from controller.dummy_connector import DummyConnector
 from databese.database import engine
-from domain.dao.product import Product
+from domain.dao.dao_all import Product
 from domain.dto.product_dto import ProductDto
 from mappers.product_mapper import ProductMapper
 
@@ -19,7 +19,7 @@ class ProductService:
     def process_products(self, products):
         processed_products: Set[Product] = set()
         for product in products:
-            new_product: ProductDto = ProductDto(product["id"], product["title"], product["price"])
+            new_product: ProductDto = ProductDto(product["id"], product["title"], product["category"], product["price"])
             processed_products.add(self.product_mapper.map_product_to_entity(new_product))
         self.save_products(processed_products)
 
@@ -38,5 +38,11 @@ class ProductService:
     def find_all_products(self):
         with Session(engine) as session:
             statement = select(Product)
+            results = session.exec(statement)
+            return results.all()
+
+    def find_all_products_by(self, ids):
+        with Session(engine) as session:
+            statement = select(Product).where(Product.id.in_(ids))
             results = session.exec(statement)
             return results.all()

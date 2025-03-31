@@ -15,12 +15,26 @@ def main():
     user_service = UserService()
     product_service = ProductService()
     basket_service = BasketService()
-    logging.info(f"{user_service.paginate_and_process(1, 1) !r} ")
-    logging.info(f"{product_service.paginate_and_process(1, 1) !r} ")
-    logging.info(f"{basket_service.paginate_and_process(1, 1) !r} ")
-    print(user_service.find_all_users())
-    print(product_service.find_all_products())
-    print(basket_service.find_all_baskets())
+    logging.info(f"{user_service.paginate_and_process(5, 50) !r} ")
+    logging.info(f"{product_service.paginate_and_process(10, 20) !r} ")
+    logging.info(f"{basket_service.paginate_and_process(2, 25) !r} ")
+
+    print("\n***************USERS******************\n")
+    users = user_service.find_all_users()
+    for user in users:
+        print(user)
+
+    print("\n***************PRODUCTS******************\n")
+    products = product_service.find_all_products()
+    for product in products:
+        print(product)
+
+    print("\n***************BASKETS******************\n")
+    baskets = basket_service.find_all_baskets()
+    for basket in baskets:
+        print(basket)
+
+
 
 if __name__ == "__main__":
     logging.basicConfig(

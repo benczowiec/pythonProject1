@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 
 from controller.dummy_connector import DummyConnector
 from databese.database import engine
-from domain.dao.user import User
+from domain.dao.dao_all import User
 from domain.dto.user_dto import UserDto
 from mappers.user_mapper import UserMapper
 
@@ -19,7 +19,7 @@ class UserService:
     def process_users(self, users):
         processed_users: Set[User] = set()
         for user in users:
-            new_user: UserDto = UserDto(user["firstName"], user["lastName"],
+            new_user: UserDto = UserDto(user["id"], user["firstName"], user["lastName"],
                                         user["address"]["coordinates"]["lat"],
                                         user["address"]["coordinates"]["lng"])
             new_user.find_localization()
@@ -44,3 +44,9 @@ class UserService:
             results = session.exec(statement)
             all_users = results.all()
             return all_users
+
+    def find_user_by_id(self, user_id):
+        with Session(engine) as session:
+            statement = select(User).where(User.id == user_id)
+            result = session.exec(statement).first()
+            return result

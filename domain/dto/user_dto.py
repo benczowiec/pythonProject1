@@ -5,8 +5,8 @@ import reverse_geocode
 
 class UserDto:
 
-    def __init__(self, first_name, last_name, latitude: str, longitude: str):
-        self.uuid = uuid4()
+    def __init__(self,user_id, first_name, last_name, latitude: str, longitude: str):
+        self.user_id = user_id
         self.first_name = first_name
         self.last_name = last_name
         self.latitude: str = latitude
@@ -25,7 +25,7 @@ class UserDto:
         return f"User with ID: -> {self.first_name} {self.last_name} \n"
 
     def __hash__(self):
-        return hash(self.uuid)
+        return hash(self.user_id)
 
     # @property
     # def last_name(self):
